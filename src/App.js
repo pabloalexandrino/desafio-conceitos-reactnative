@@ -24,24 +24,24 @@ export default function App() {
   }, [])
 
   async function handleLikeRepository(id) {
-    await api.post('/repositories/' + id + '/like')
-    repositories.map(item => item.id === id ? item.likes++ : item.likes)
-    setRepositories([...repositories])
+    const response = await api.post('/repositories/' + id + '/like')
+    const liked = response.data
+    const refreshLike = repositories.map(item => item.id === id ? liked : item)
+    setRepositories(refreshLike)
   }
-
   return (
     <>
       <StatusBar barStyle="light-content" backgroundColor="#7159c1" />
       <SafeAreaView style={styles.container}>
         <FlatList
           data={repositories}
-          keyExtractor={repo => repo.id}
+          keyExtractor={(repository) => repository.id}
           renderItem={
             ({ item }) => (
               <View style={styles.repositoryContainer}>
                 <Text style={styles.repository}>{item.title}</Text>
                 <View style={styles.techsContainer}>
-                  {item.techs.split(',').map(tech => <Text key={tech} style={styles.tech}>{tech}</Text>)}
+                  {item.techs.map(tech => <Text key={tech} style={styles.tech}>{tech}</Text>)}
                 </View>
 
                 <View style={styles.likesContainer}>
